@@ -1,0 +1,1235 @@
+<Window x:Class="JumpzysVortex.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Jumpzys Vortex" Height="720" Width="980" Icon="vortex.ico"
+        WindowStyle="None" AllowsTransparency="True"
+        Background="Transparent" ResizeMode="CanResizeWithGrip"
+        MouseLeftButtonDown="TitleBar_MouseDown">
+
+    <Border Background="{StaticResource Bg2Brush}"
+            BorderBrush="#1A2030" BorderThickness="1" CornerRadius="4">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="46"/>  <!-- title bar -->
+                <RowDefinition Height="44"/>  <!-- nav tabs -->
+                <RowDefinition Height="*"/>   <!-- content -->
+            </Grid.RowDefinitions>
+
+            <!-- ══ TITLE BAR ════════════════════════════════════════════ -->
+            <Border Grid.Row="0" Background="#07090D"
+                    BorderBrush="#1A2030" BorderThickness="0,0,0,1"
+                    CornerRadius="4,4,0,0">
+                <!-- Green glow line at bottom -->
+                <Grid>
+                    <Rectangle VerticalAlignment="Bottom" Height="1" Opacity=".35">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="Transparent"            Offset="0"/>
+                                <GradientStop Color="{StaticResource GreenColor}" Offset=".5"/>
+                                <GradientStop Color="Transparent"            Offset="1"/>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+
+                    <DockPanel Margin="16,0">
+                        <!-- Logo + badges -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" DockPanel.Dock="Left">
+                            <!-- Hex icon -->
+                            <Canvas Width="22" Height="22" Margin="0,0,10,0">
+                                <Polygon Points="11,1 20,6 20,16 11,21 2,16 2,6"
+                                         Stroke="{StaticResource GreenBrush}" StrokeThickness="1"
+                                         Fill="Transparent" Opacity=".5"/>
+                                <Ellipse Canvas.Left="8" Canvas.Top="8" Width="6" Height="6"
+                                         Fill="{StaticResource GreenBrush}" Opacity=".9"/>
+                            </Canvas>
+                            <TextBlock Text="JUMPZYS VORTEX"
+                                       FontFamily="Consolas" FontSize="11" FontWeight="Bold"
+                                       Foreground="{StaticResource GreenBrush}"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text=" v2.2"
+                                       FontFamily="Consolas" FontSize="10"
+                                       Foreground="{StaticResource MutedBrush}"
+                                       VerticalAlignment="Center"/>
+                            <!-- ML badge -->
+                            <Border x:Name="MLBadge"
+                                    Background="#1500D4FF" BorderBrush="#4400D4FF"
+                                    BorderThickness="1" CornerRadius="2"
+                                    Padding="7,2" Margin="10,0,0,0"
+                                    VerticalAlignment="Center" Visibility="Collapsed">
+                                <TextBlock Text="ML ACTIVE"
+                                           FontFamily="Consolas" FontSize="9"
+                                           Foreground="{StaticResource BlueBrush}"/>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Window controls -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                                    VerticalAlignment="Center" DockPanel.Dock="Right">
+                            <!-- Active game pill -->
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,14,0">
+                                <Ellipse x:Name="GameDot" Width="6" Height="6"
+                                         Fill="{StaticResource GreenBrush}" Margin="0,0,6,0"/>
+                                <TextBlock x:Name="TbGameLabel"
+                                           Text="No game"
+                                           FontFamily="Consolas" FontSize="10"
+                                           Foreground="{StaticResource MutedBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <Button Content="─" Width="28" Height="26"
+                                    Background="Transparent" BorderThickness="0"
+                                    Foreground="{StaticResource MutedBrush}"
+                                    FontSize="12" Cursor="Hand"
+                                    Click="MinimizeWindow_Click"/>
+                            <Button Content="✕" Width="28" Height="26"
+                                    Background="Transparent" BorderThickness="0"
+                                    Foreground="#FF2D55" FontSize="12" Cursor="Hand"
+                                    Click="CloseToTray_Click"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Grid>
+            </Border>
+
+            <!-- ══ NAV TABS ═════════════════════════════════════════════ -->
+            <Border Grid.Row="1" Background="#08090E"
+                    BorderBrush="#1A2030" BorderThickness="0,0,0,1">
+                <StackPanel Orientation="Horizontal" Margin="16,0,0,0">
+                    <RadioButton x:Name="TabDashboard"  Content="⬡  Dashboard"  Style="{StaticResource NavTab}" IsChecked="True"  Checked="Tab_Checked"/>
+                    <RadioButton x:Name="TabPerf"       Content="◈  Performance" Style="{StaticResource NavTab}" Checked="Tab_Checked"/>
+                    <RadioButton x:Name="TabNetwork"    Content="◎  Network"     Style="{StaticResource NavTab}" Checked="Tab_Checked"/>
+                    <RadioButton x:Name="TabML"         Content="◇  ML Engine"   Style="{StaticResource NavTab}" Checked="Tab_Checked"/>
+                    <RadioButton x:Name="TabAdvanced"   Content="⚙  Advanced"    Style="{StaticResource NavTab}" Checked="Tab_Checked"/>
+                    <RadioButton x:Name="TabSettings"   Content="◉  Settings"    Style="{StaticResource NavTab}" Checked="Tab_Checked"/>
+                    <RadioButton x:Name="TabControl"    Content="CTRL  Control"   Style="{StaticResource NavTab}" Checked="Tab_Checked"/>
+                    <RadioButton x:Name="TabLogs"       Content="▤  Logs"        Style="{StaticResource NavTab}" Checked="Tab_Checked"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ══ TAB PAGES ════════════════════════════════════════════ -->
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <Grid>
+
+                <!-- ─────────────────────────────────── -->
+                <!-- TAB 1: DASHBOARD                    -->
+                <!-- ─────────────────────────────────── -->
+                <Grid x:Name="PageDashboard" Margin="18" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="220"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- LEFT -->
+                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
+
+                        <!-- Game status -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="ACTIVE GAME" Style="{StaticResource SectionLabel}" Margin="0,0,0,4"/>
+                                    <TextBlock x:Name="GameLabel" Text="Scanning..."
+                                               FontFamily="Consolas" FontSize="18" FontWeight="Bold"
+                                               Foreground="{StaticResource TextBrush}"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" x:Name="StatePill"
+                                        Background="#1200FF88" BorderBrush="#5000FF88"
+                                        BorderThickness="1" CornerRadius="2"
+                                        Padding="12,4" VerticalAlignment="Center">
+                                    <TextBlock x:Name="StateLabel" Text="GREEN"
+                                               FontFamily="Consolas" FontSize="11" FontWeight="Bold"
+                                               Foreground="{StaticResource GreenBrush}"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- Tip text -->
+                        <TextBlock x:Name="TipLabel" Text="System running smoothly."
+                                   FontSize="12" FontStyle="Italic"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="2,0,0,10" TextWrapping="Wrap"/>
+
+                        <!-- 4 metric cards -->
+                        <UniformGrid Rows="1" Columns="4" Margin="0,0,0,10">
+                            <!-- CPU -->
+                            <Border Style="{StaticResource Card}" Margin="0,0,8,0">
+                                <StackPanel>
+                                    <TextBlock Text="CPU" Style="{StaticResource SectionLabel}" Margin="0,0,0,2"/>
+                                    <TextBlock x:Name="CpuLabel" Text="—%" Style="{StaticResource BigVal}"/>
+                                    <ProgressBar x:Name="CpuBar" Style="{StaticResource SlimBar}"/>
+                                </StackPanel>
+                            </Border>
+                            <!-- RAM -->
+                            <Border Style="{StaticResource Card}" Margin="0,0,8,0">
+                                <StackPanel>
+                                    <TextBlock Text="RAM" Style="{StaticResource SectionLabel}" Margin="0,0,0,2"/>
+                                    <TextBlock x:Name="RamLabel" Text="—%" Style="{StaticResource BigVal}"
+                                               Foreground="{StaticResource PurpleBrush}"/>
+                                    <ProgressBar x:Name="RamBar" Style="{StaticResource SlimBar}"
+                                                 Foreground="{StaticResource PurpleBrush}"/>
+                                </StackPanel>
+                            </Border>
+                            <!-- GPU -->
+                            <Border Style="{StaticResource Card}" Margin="0,0,8,0">
+                                <StackPanel>
+                                    <TextBlock Text="GPU" Style="{StaticResource SectionLabel}" Margin="0,0,0,2"/>
+                                    <TextBlock x:Name="GpuLabel" Text="—%" Style="{StaticResource BigVal}"
+                                               Foreground="{StaticResource BlueBrush}"/>
+                                    <ProgressBar x:Name="GpuBar" Style="{StaticResource SlimBar}"
+                                                 Foreground="{StaticResource BlueBrush}"/>
+                                    <TextBlock x:Name="GpuSourceLabel" Text=""
+                                               FontFamily="Consolas" FontSize="8"
+                                               Foreground="{StaticResource MutedBrush}" Margin="0,3,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <!-- FPS -->
+                            <Border Style="{StaticResource Card}">
+                                <StackPanel>
+                                    <TextBlock Text="FPS" Style="{StaticResource SectionLabel}" Margin="0,0,0,2"/>
+                                    <TextBlock x:Name="FpsLabel" Text="—" Style="{StaticResource BigVal}"/>
+                                    <TextBlock x:Name="TempLabel" Text="—°C"
+                                               FontFamily="Consolas" FontSize="10"
+                                               Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0"/>
+                                    <TextBlock x:Name="TempSourceLabel" Text=""
+                                               FontFamily="Consolas" FontSize="8"
+                                               Foreground="{StaticResource MutedBrush}" Margin="0,1,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <!-- Frametime Analysis -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="AVG FPS" Style="{StaticResource SectionLabel}" Margin="0,0,0,2"/>
+                                    <TextBlock x:Name="AvgFpsLabel" Text="—" Style="{StaticResource BigVal}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="1% LOW" Style="{StaticResource SectionLabel}" Margin="0,0,0,2"/>
+                                    <TextBlock x:Name="OnePctLowLabel" Text="—"
+                                               FontFamily="Consolas" FontSize="22" FontWeight="Bold"
+                                               Foreground="{StaticResource YellowBrush}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="STUTTER" Style="{StaticResource SectionLabel}" Margin="0,0,0,2"/>
+                                    <TextBlock x:Name="StutterLabel" Text="—"
+                                               FontFamily="Consolas" FontSize="22" FontWeight="Bold"
+                                               Foreground="{StaticResource GreenBrush}"/>
+                                </StackPanel>
+                                <Button Grid.Column="3" Content="FLUSH RAM"
+                                        Style="{StaticResource SmButton}"
+                                        VerticalAlignment="Center"
+                                        Click="FlushRam_Click"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Network card -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,20,0">
+                                    <TextBlock Text="PING" Style="{StaticResource SectionLabel}" Margin="0,0,0,3"/>
+                                    <TextBlock x:Name="PingLabel" Text="— ms"
+                                               FontFamily="Consolas" FontSize="24" FontWeight="Bold"
+                                               Foreground="{StaticResource BlueBrush}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="NETWORK STATUS" Style="{StaticResource SectionLabel}" Margin="0,0,0,2"/>
+                                    <TextBlock x:Name="NetStatusLabel" Text="Checking..."
+                                               FontFamily="Consolas" FontSize="12"
+                                               Foreground="{StaticResource TextBrush}"/>
+                                    <TextBlock x:Name="JitterStatusLabel" Text=""
+                                               FontFamily="Consolas" FontSize="9"
+                                               Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="2" Text="◎" FontSize="20"
+                                           Foreground="{StaticResource BlueBrush}" Opacity=".4"
+                                           VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Operations matrix -->
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Border BorderBrush="#334FE0B5" BorderThickness="1" CornerRadius="3"
+                                        Background="#1022E6A8" Padding="10,8" Margin="0,0,8,0">
+                                    <StackPanel>
+                                        <TextBlock Text="THERMAL LANE" Style="{StaticResource SectionLabel}" Margin="0,0,0,3"/>
+                                        <TextBlock Text="ADAPTIVE" FontFamily="Consolas" FontSize="15" FontWeight="Bold"
+                                                   Foreground="{StaticResource GreenBrush}"/>
+                                        <TextBlock Text="sensor-aware boost" FontFamily="Consolas" FontSize="9"
+                                                   Foreground="{StaticResource MutedBrush}" Margin="0,3,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="1" BorderBrush="#3358C7FF" BorderThickness="1" CornerRadius="3"
+                                        Background="#1238BDF8" Padding="10,8" Margin="0,0,8,0">
+                                    <StackPanel>
+                                        <TextBlock Text="NETWORK LANE" Style="{StaticResource SectionLabel}" Margin="0,0,0,3"/>
+                                        <TextBlock Text="LIVE" FontFamily="Consolas" FontSize="15" FontWeight="Bold"
+                                                   Foreground="{StaticResource BlueBrush}"/>
+                                        <TextBlock Text="latency watch" FontFamily="Consolas" FontSize="9"
+                                                   Foreground="{StaticResource MutedBrush}" Margin="0,3,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="2" BorderBrush="#44FBBF24" BorderThickness="1" CornerRadius="3"
+                                        Background="#16FBBF24" Padding="10,8">
+                                    <StackPanel>
+                                        <TextBlock Text="ML LANE" Style="{StaticResource SectionLabel}" Margin="0,0,0,3"/>
+                                        <TextBlock Text="ARMED" FontFamily="Consolas" FontSize="15" FontWeight="Bold"
+                                                   Foreground="{StaticResource YellowBrush}"/>
+                                        <TextBlock Text="bottleneck model" FontFamily="Consolas" FontSize="9"
+                                                   Foreground="{StaticResource MutedBrush}" Margin="0,3,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- RIGHT COLUMN -->
+                    <StackPanel Grid.Column="1">
+
+                        <!-- Boost + Restore -->
+                        <Button x:Name="BoostBtn" Content="⚡  APPLY BOOST"
+                                Style="{StaticResource BoostButton}"
+                                Margin="0,0,0,6" Click="BoostToggle_Click"/>
+                        <Button Content="RESTORE NORMAL"
+                                Style="{StaticResource SecButton}"
+                                Margin="0,0,0,14" Click="Restore_Click"/>
+
+                        <!-- Quick Settings -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,8">
+                            <StackPanel>
+                                <TextBlock Text="SETTINGS" Style="{StaticResource SectionLabel}"/>
+                                <CheckBox x:Name="AutoBoostCheck"  Content="Auto-boost on game start" Style="{StaticResource Toggle}" Checked="Settings_Changed" Unchecked="Settings_Changed"/>
+                                <CheckBox x:Name="StartWithWindowsCheck" Content="Start with Windows"     Style="{StaticResource Toggle}" Checked="Settings_Changed" Unchecked="Settings_Changed"/>
+                                <CheckBox x:Name="StartMinimizedCheck"   Content="Start minimised to tray" Style="{StaticResource Toggle}" Checked="Settings_Changed" Unchecked="Settings_Changed"/>
+                                <CheckBox x:Name="OverlayCheck"          Content="FPS overlay"             Style="{StaticResource Toggle}" Checked="Settings_Changed" Unchecked="Settings_Changed"/>
+                                <CheckBox x:Name="NetOverlayCheck"       Content="Network overlay"          Style="{StaticResource Toggle}" Checked="Settings_Changed" Unchecked="Settings_Changed"/>
+                                <CheckBox x:Name="MLCheck"               Content="ML prediction engine"    Style="{StaticResource Toggle}" Checked="Settings_Changed" Unchecked="Settings_Changed" Margin="0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Hotkeys -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,8">
+                            <StackPanel>
+                                <TextBlock Text="HOTKEYS" Style="{StaticResource SectionLabel}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <!-- Row 0 -->
+                                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource KeyChip}" Margin="0,0,8,5">
+                                        <TextBlock Text="CTRL+SHIFT+B" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource GreenBrush}"/>
+                                    </Border>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Boost" FontFamily="Consolas" FontSize="11" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" Margin="0,0,0,5"/>
+                                    <!-- Row 1 -->
+                                    <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource KeyChip}" Margin="0,0,8,5">
+                                        <TextBlock Text="CTRL+SHIFT+R" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource GreenBrush}"/>
+                                    </Border>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Restore" FontFamily="Consolas" FontSize="11" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" Margin="0,0,0,5"/>
+                                    <!-- Row 2 -->
+                                    <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource KeyChip}" Margin="0,0,8,5">
+                                        <TextBlock Text="CTRL+SHIFT+O" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource GreenBrush}"/>
+                                    </Border>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Overlays" FontFamily="Consolas" FontSize="11" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" Margin="0,0,0,5"/>
+                                    <!-- Row 3 -->
+                                    <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource KeyChip}" Margin="0,0,8,0">
+                                        <TextBlock Text="CTRL+SHIFT+D" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource GreenBrush}"/>
+                                    </Border>
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Dashboard" FontFamily="Consolas" FontSize="11" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- ML mini -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,8">
+                            <StackPanel>
+                                <TextBlock Text="ML ENGINE" Style="{StaticResource SectionLabel}"/>
+                                <Button Content="TRAIN NOW" Style="{StaticResource SecButton}"
+                                        Margin="0,0,0,6" Click="TrainML_Click"/>
+                                <TextBlock Text="Auto-trains after session. Needs 200+ snapshots."
+                                           FontFamily="Consolas" FontSize="9" FontStyle="Italic"
+                                           Foreground="#2A3448" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Custom game + RAM free -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,8">
+                            <StackPanel>
+                                <TextBlock Text="CUSTOM GAME EXE" Style="{StaticResource SectionLabel}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="CustomExeInput" Style="{StaticResource DarkInput}"
+                                             Text="game.exe" Margin="0,0,4,0"/>
+                                    <Button Grid.Column="1" Content="ADD" Style="{StaticResource SmButton}"
+                                            Click="AddCustomGame_Click"/>
+                                </Grid>
+                                <ItemsControl x:Name="CustomGamesList" Margin="0,6,0,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}" FontFamily="Consolas" FontSize="10"
+                                                       Foreground="{StaticResource GreenBrush}" Opacity=".7"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Padding="12,8">
+                            <StackPanel>
+                                <TextBlock Text="AVAILABLE RAM" Style="{StaticResource SectionLabel}" Margin="0,0,0,3"/>
+                                <TextBlock x:Name="RamFreeLabel" Text="— MB free"
+                                           FontFamily="Consolas" FontSize="14" FontWeight="Bold"
+                                           Foreground="#8090A8"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <!-- ─────────────────────────────────── -->
+                <!-- TAB 2: PERFORMANCE                  -->
+                <!-- ─────────────────────────────────── -->
+                <Grid x:Name="PagePerf" Margin="18" Visibility="Collapsed" VerticalAlignment="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Top 4 detailed cards -->
+                    <UniformGrid Rows="1" Columns="4" Margin="0,0,0,12">
+                        <!-- CPU -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,8,0">
+                            <StackPanel>
+                                <TextBlock Text="CPU DETAIL" Style="{StaticResource SectionLabel}"/>
+                                <TextBlock x:Name="PerfCpuVal" Text="—%" FontFamily="Consolas" FontSize="30" FontWeight="Bold" Foreground="{StaticResource GreenBrush}"/>
+                                <ProgressBar x:Name="PerfCpuBar" Style="{StaticResource SlimBar}" Margin="0,8,0,6"/>
+                                <TextBlock x:Name="PerfCpuTemp" Text="Temp: —°C" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}"/>
+                                <TextBlock Text="Cores: 16 · Threads: 32" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- RAM -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,8,0">
+                            <StackPanel>
+                                <TextBlock Text="MEMORY" Style="{StaticResource SectionLabel}"/>
+                                <TextBlock x:Name="PerfRamVal" Text="—%" FontFamily="Consolas" FontSize="30" FontWeight="Bold" Foreground="{StaticResource PurpleBrush}"/>
+                                <ProgressBar x:Name="PerfRamBar" Style="{StaticResource SlimBar}" Foreground="{StaticResource PurpleBrush}" Margin="0,8,0,6"/>
+                                <TextBlock x:Name="PerfRamUsed" Text="Used: — GB / 32 GB" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}"/>
+                                <TextBlock Text="DDR5 · 6000MHz · Dual Ch." FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- GPU -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,8,0">
+                            <StackPanel>
+                                <TextBlock Text="GPU DETAIL" Style="{StaticResource SectionLabel}"/>
+                                <TextBlock x:Name="PerfGpuVal" Text="—%" FontFamily="Consolas" FontSize="30" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/>
+                                <ProgressBar x:Name="PerfGpuBar" Style="{StaticResource SlimBar}" Foreground="{StaticResource BlueBrush}" Margin="0,8,0,6"/>
+                                <TextBlock x:Name="PerfGpuTemp" Text="GPU Temp: —°C" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}"/>
+                                <TextBlock Text="RTX 4080 · 16 GB VRAM" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- FPS -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="FRAME RATE" Style="{StaticResource SectionLabel}"/>
+                                <TextBlock x:Name="PerfFpsVal" Text="—" FontFamily="Consolas" FontSize="30" FontWeight="Bold" Foreground="{StaticResource GreenBrush}"/>
+                                <TextBlock Text="fps" FontFamily="Consolas" FontSize="10" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,6"/>
+                                <TextBlock x:Name="PerfFpsMin" Text="Min: — fps"  FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}"/>
+                                <TextBlock x:Name="PerfFpsMax" Text="Max: — fps"  FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                                <TextBlock x:Name="PerfFpsAvg" Text="Avg: — fps"  FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+
+                    <!-- Process list -->
+                    <Border Grid.Row="1" Style="{StaticResource Card}">
+                        <StackPanel>
+                            <DockPanel LastChildFill="False" Margin="0,0,0,10">
+                                <TextBlock Text="BACKGROUND PROCESSES" Style="{StaticResource SectionLabel}" Margin="0,0,0,0" DockPanel.Dock="Left"/>
+                                <Border Background="#1AFF2D55" BorderBrush="#33FF2D55" BorderThickness="1"
+                                        CornerRadius="2" Padding="6,1" DockPanel.Dock="Right">
+                                    <TextBlock x:Name="ThrottledCount" Text="3 THROTTLED"
+                                               FontFamily="Consolas" FontSize="8" Foreground="{StaticResource RedBrush}"/>
+                                </Border>
+                            </DockPanel>
+                            <!-- Headers -->
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="70"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="PROCESS" Grid.Column="0" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}"/>
+                                <TextBlock Text="CPU" Grid.Column="1" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Right"/>
+                                <TextBlock Text="USAGE" Grid.Column="2" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="8,0,0,0"/>
+                                <TextBlock Text="STATUS" Grid.Column="3" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Center"/>
+                            </Grid>
+                            <ItemsControl x:Name="ProcessList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,3,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="60"/>
+                                                <ColumnDefinition Width="120"/>
+                                                <ColumnDefinition Width="70"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Name}" Grid.Column="0"
+                                                       FontFamily="Consolas" FontSize="10"
+                                                       Foreground="#5A6A88"/>
+                                            <TextBlock Text="{Binding CpuStr}" Grid.Column="1"
+                                                       FontFamily="Consolas" FontSize="10"
+                                                       Foreground="{StaticResource MutedBrush}"
+                                                       HorizontalAlignment="Right"/>
+                                            <ProgressBar Value="{Binding CpuPct, Mode=OneWay}" Maximum="100"
+                                                         Grid.Column="2" Height="3"
+                                                         Background="#1A2030"
+                                                         Foreground="{Binding BarColor}"
+                                                         BorderThickness="0" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                            <Border Grid.Column="3" Background="{Binding BadgeBg}"
+                                                    BorderBrush="{Binding BadgeBorder}"
+                                                    BorderThickness="1" CornerRadius="2"
+                                                    Padding="5,1" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding Status}"
+                                                           FontFamily="Consolas" FontSize="8"
+                                                           Foreground="{Binding BadgeFg}"/>
+                                            </Border>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- ─────────────────────────────────── -->
+                <!-- TAB 3: NETWORK                      -->
+                <!-- ─────────────────────────────────── -->
+                <Grid x:Name="PageNetwork" Margin="18" Visibility="Collapsed" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
+
+                        <!-- Big ping -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,24,0">
+                                    <TextBlock Text="PING" Style="{StaticResource SectionLabel}" Margin="0,0,0,3"/>
+                                    <TextBlock x:Name="NetPingBig" Text="— ms"
+                                               FontFamily="Consolas" FontSize="36" FontWeight="Bold"
+                                               Foreground="{StaticResource BlueBrush}"/>
+                                    <TextBlock x:Name="NetConnStatus" Text="ONLINE · STABLE"
+                                               FontFamily="Consolas" FontSize="10"
+                                               Foreground="{StaticResource GreenBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                                <UniformGrid Grid.Column="1" Rows="2" Columns="2">
+                                    <StackPanel Margin="0,0,0,8">
+                                        <TextBlock Text="JITTER" Style="{StaticResource SectionLabel}" Margin="0,0,0,2"/>
+                                        <TextBlock x:Name="NetJitter" Text="— ms" FontFamily="Consolas" FontSize="18" FontWeight="Bold" Foreground="{StaticResource GreenBrush}"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,0,8">
+                                        <TextBlock Text="PACKET LOSS" Style="{StaticResource SectionLabel}" Margin="0,0,0,2"/>
+                                        <TextBlock x:Name="NetLoss" Text="—%" FontFamily="Consolas" FontSize="18" FontWeight="Bold" Foreground="{StaticResource GreenBrush}"/>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="DOWNLOAD" Style="{StaticResource SectionLabel}" Margin="0,0,0,2"/>
+                                        <TextBlock x:Name="NetDown" Text="— Mb/s" FontFamily="Consolas" FontSize="18" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="UPLOAD" Style="{StaticResource SectionLabel}" Margin="0,0,0,2"/>
+                                        <TextBlock x:Name="NetUp" Text="— Mb/s" FontFamily="Consolas" FontSize="18" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/>
+                                    </StackPanel>
+                                </UniformGrid>
+                            </Grid>
+                        </Border>
+
+                        <!-- Ping history text -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="PING HISTORY" Style="{StaticResource SectionLabel}"/>
+                                <ScrollViewer Height="100">
+                                    <TextBlock x:Name="NetLogBox"
+                                               FontFamily="Consolas" FontSize="10"
+                                               Foreground="#2A3448" TextWrapping="Wrap"/>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Right: connection info + ping test -->
+                    <StackPanel Grid.Column="1">
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="CONNECTION INFO" Style="{StaticResource SectionLabel}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="TARGET:" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,0,8,5"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="1.1.1.1 (Cloudflare)" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource TextBrush}" Margin="0,0,0,5"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="ADAPTER:" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,0,8,5"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="2.5GbE LAN" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource TextBrush}" Margin="0,0,0,5"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="SAMPLES:" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,0,8,5"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="4 per poll" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource TextBrush}" Margin="0,0,0,5"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="TIMEOUT:" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,0,8,5"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="2000 ms" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource TextBrush}" Margin="0,0,0,5"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="STATUS:" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,0,8,0"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="1" x:Name="NetInfoStatus" Text="ONLINE" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource GreenBrush}"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Overlay toggles -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="OVERLAY CONTROL" Style="{StaticResource SectionLabel}"/>
+                                <CheckBox Content="FPS overlay"     Style="{StaticResource Toggle}" IsChecked="{Binding ElementName=OverlayCheck,Path=IsChecked,Mode=TwoWay}"/>
+                                <CheckBox Content="Network overlay" Style="{StaticResource Toggle}" IsChecked="{Binding ElementName=NetOverlayCheck,Path=IsChecked,Mode=TwoWay}" Margin="0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <!-- ─────────────────────────────────── -->
+                <!-- TAB 4: ML ENGINE                    -->
+                <!-- ─────────────────────────────────── -->
+                <Grid x:Name="PageML" Margin="18" Visibility="Collapsed" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
+
+                        <!-- ML stat tiles -->
+                        <UniformGrid Rows="1" Columns="2" Margin="0,0,0,12">
+                            <Border Style="{StaticResource Card}" Margin="0,0,8,0">
+                                <StackPanel>
+                                    <TextBlock Text="SNAPSHOTS COLLECTED" Style="{StaticResource SectionLabel}"/>
+                                    <TextBlock x:Name="MLSnapsLabel" Text="0"
+                                               FontFamily="Consolas" FontSize="30" FontWeight="Bold"
+                                               Foreground="{StaticResource BlueBrush}"/>
+                                    <ProgressBar x:Name="MLProgressBar" Style="{StaticResource SlimBar}"
+                                                 Foreground="{StaticResource BlueBrush}" Margin="0,8,0,4"/>
+                                    <TextBlock x:Name="MLProgressText" Text="0 / 200 for auto-train"
+                                               FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource Card}">
+                                <StackPanel>
+                                    <TextBlock Text="BOTTLENECK RISK" Style="{StaticResource SectionLabel}"/>
+                                    <TextBlock x:Name="MLRiskLabel" Text="—%"
+                                               FontFamily="Consolas" FontSize="30" FontWeight="Bold"
+                                               Foreground="{StaticResource GreenBrush}"/>
+                                    <ProgressBar x:Name="MLRiskBar" Style="{StaticResource SlimBar}" Margin="0,8,0,4"/>
+                                    <TextBlock x:Name="MLRiskDesc" Text="Awaiting data"
+                                               FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}"/>
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <!-- Model stats -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="MODEL ACCURACY" Style="{StaticResource SectionLabel}"/>
+                                    <TextBlock x:Name="MLAccuracy" Text="—%"
+                                               FontFamily="Consolas" FontSize="20" FontWeight="Bold"
+                                               Foreground="{StaticResource PurpleBrush}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="ALGORITHM" Style="{StaticResource SectionLabel}"/>
+                                    <TextBlock Text="FastTree Binary"
+                                               FontFamily="Consolas" FontSize="14"
+                                               Foreground="{StaticResource TextBrush}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="SESSIONS TRAINED" Style="{StaticResource SectionLabel}"/>
+                                    <TextBlock x:Name="MLSessions" Text="0"
+                                               FontFamily="Consolas" FontSize="20" FontWeight="Bold"
+                                               Foreground="{StaticResource YellowBrush}"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Train controls -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="TRAINING CONTROLS" Style="{StaticResource SectionLabel}"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <Button Content="▶  TRAIN NOW" Style="{StaticResource SecButton}"
+                                            Width="140" Margin="0,0,8,0" Click="TrainML_Click"/>
+                                    <Button Content="✕  CLEAR MODEL" Style="{StaticResource SecButton}"
+                                            Width="140" Margin="0,0,8,0" Click="ClearML_Click"/>
+                                </StackPanel>
+                                <TextBlock Text="Auto-trains at end of each game session once 200+ snapshots collected. Uses FastTree binary classification on CPU/RAM/GPU/FPS/Network features."
+                                           FontFamily="Consolas" FontSize="9" FontStyle="Italic"
+                                           Foreground="#2A3448" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Right: factor weights + ML log -->
+                    <StackPanel Grid.Column="1">
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="PREDICTION FACTORS" Style="{StaticResource SectionLabel}"/>
+                                <!-- CPU -->
+                                <DockPanel LastChildFill="False" Margin="0,0,0,4">
+                                    <TextBlock Text="CPU WEIGHT" DockPanel.Dock="Left" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}"/>
+                                    <TextBlock Text="38%" DockPanel.Dock="Right" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource GreenBrush}"/>
+                                </DockPanel>
+                                <ProgressBar Value="38" Maximum="100" Style="{StaticResource SlimBar}" Margin="0,0,0,8"/>
+                                <!-- RAM -->
+                                <DockPanel LastChildFill="False" Margin="0,0,0,4">
+                                    <TextBlock Text="RAM WEIGHT" DockPanel.Dock="Left" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}"/>
+                                    <TextBlock Text="24%" DockPanel.Dock="Right" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource PurpleBrush}"/>
+                                </DockPanel>
+                                <ProgressBar Value="24" Maximum="100" Style="{StaticResource SlimBar}" Foreground="{StaticResource PurpleBrush}" Margin="0,0,0,8"/>
+                                <!-- GPU -->
+                                <DockPanel LastChildFill="False" Margin="0,0,0,4">
+                                    <TextBlock Text="GPU WEIGHT" DockPanel.Dock="Left" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}"/>
+                                    <TextBlock Text="22%" DockPanel.Dock="Right" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource BlueBrush}"/>
+                                </DockPanel>
+                                <ProgressBar Value="22" Maximum="100" Style="{StaticResource SlimBar}" Foreground="{StaticResource BlueBrush}" Margin="0,0,0,8"/>
+                                <!-- Network -->
+                                <DockPanel LastChildFill="False" Margin="0,0,0,4">
+                                    <TextBlock Text="NETWORK WEIGHT" DockPanel.Dock="Left" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}"/>
+                                    <TextBlock Text="16%" DockPanel.Dock="Right" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource YellowBrush}"/>
+                                </DockPanel>
+                                <ProgressBar Value="16" Maximum="100" Style="{StaticResource SlimBar}" Foreground="{StaticResource YellowBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- ML Training log -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="TRAINING LOG" Style="{StaticResource SectionLabel}"/>
+                                <ScrollViewer Height="120">
+                                    <TextBlock x:Name="MLLogBox"
+                                               FontFamily="Consolas" FontSize="10"
+                                               Foreground="#2A3448" TextWrapping="Wrap"/>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Auto-train config -->
+                        <Border Style="{StaticResource Card}" Margin="0,10,0,0">
+                            <StackPanel>
+                                <TextBlock Text="AUTO-TRAIN CONFIG" Style="{StaticResource SectionLabel}"/>
+                                <CheckBox x:Name="AutoTrainCheck" Content="Auto-train after session" Style="{StaticResource Toggle}" IsChecked="True"/>
+                                <CheckBox Content="ML boost override" Style="{StaticResource Toggle}" IsChecked="True"/>
+                                <CheckBox Content="Verbose logging" Style="{StaticResource Toggle}" Margin="0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <!-- ─────────────────────────────────── -->
+                <!-- TAB 5: ADVANCED                     -->
+                <!-- ─────────────────────────────────── -->
+                <Grid x:Name="PageAdvanced" Margin="18" Visibility="Collapsed" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- LEFT -->
+                    <StackPanel Margin="0,0,8,0">
+
+                        <!-- Security / VBS -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="SECURITY / VIRTUALISATION (VBS)" Style="{StaticResource SectionLabel}"/>
+                                <TextBlock x:Name="VbsStatusLabel" Text="Detecting..."
+                                           FontFamily="Consolas" FontSize="10"
+                                           Foreground="{StaticResource MutedBrush}" Margin="0,0,0,8"/>
+                                <Border Background="#1AFF2D55" BorderBrush="#33FF2D55"
+                                        BorderThickness="1" CornerRadius="2" Padding="8,6" Margin="0,0,0,10">
+                                    <TextBlock Text="⚠  Creates System Restore Point · Requires reboot · Reversible"
+                                               FontFamily="Consolas" FontSize="9" Foreground="#FF8090"
+                                               TextWrapping="Wrap"/>
+                                </Border>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button x:Name="DisableVbsBtn" Content="DISABLE VBS / HVCI"
+                                            Style="{StaticResource SecButton}" Width="170"
+                                            Margin="0,0,8,0" Click="DisableVbs_Click"/>
+                                    <Button Content="RE-ENABLE" Style="{StaticResource SecButton}"
+                                            Width="100" Click="EnableVbs_Click"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- GPU Scheduling -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="GPU SCHEDULING" Style="{StaticResource SectionLabel}"/>
+                                <TextBlock x:Name="GpuVendorLabel" Text="Detecting GPU..."
+                                           FontFamily="Consolas" FontSize="9"
+                                           Foreground="{StaticResource MutedBrush}" Margin="0,0,0,8"/>
+                                <CheckBox x:Name="HagsCheck"
+                                          Content="Hardware-Accelerated GPU Scheduling (HAGS)"
+                                          Style="{StaticResource Toggle}"
+                                          Checked="HagsToggle" Unchecked="HagsToggle"/>
+                                <CheckBox x:Name="WindowedOptCheck"
+                                          Content="Optimisations for windowed games"
+                                          Style="{StaticResource Toggle}"
+                                          Checked="WindowedOptToggle" Unchecked="WindowedOptToggle"
+                                          Margin="0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- NVIDIA-specific -->
+                        <Border x:Name="NvPanelRoot" Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="NVIDIA DRIVER TWEAKS" Style="{StaticResource SectionLabel}"/>
+                                <CheckBox x:Name="NvLowLatencyCheck"
+                                          Content="Low Latency Mode (Ultra)"
+                                          Style="{StaticResource Toggle}"
+                                          Checked="NvLatencyToggle" Unchecked="NvLatencyToggle"/>
+                                <CheckBox x:Name="NvMaxPerfCheck"
+                                          Content="Maximum Performance power mode"
+                                          Style="{StaticResource Toggle}"
+                                          Checked="NvPerfToggle" Unchecked="NvPerfToggle"
+                                          Margin="0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Anti-cheat status -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="ANTI-CHEAT STATUS" Style="{StaticResource SectionLabel}"/>
+                                <TextBlock x:Name="AntiCheatLabel" Text="Scanning..."
+                                           FontFamily="Consolas" FontSize="10"
+                                           Foreground="{StaticResource MutedBrush}"
+                                           TextWrapping="Wrap"/>
+                                <TextBlock Text="Note: all tweaks here are safe with EAC, BattlEye, Vanguard."
+                                           FontFamily="Consolas" FontSize="9"
+                                           Foreground="#2A3448" Margin="0,6,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- RIGHT -->
+                    <StackPanel Grid.Column="1">
+
+                        <!-- Shader Cache -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <DockPanel LastChildFill="False" Margin="0,0,0,8">
+                                    <TextBlock Text="SHADER CACHE" Style="{StaticResource SectionLabel}"
+                                               Margin="0" DockPanel.Dock="Left"/>
+                                    <Button Content="CLEAR" Style="{StaticResource SmButton}"
+                                            DockPanel.Dock="Right" Click="ClearCache_Click"/>
+                                    <Button Content="SCAN" Style="{StaticResource SmButton}"
+                                            DockPanel.Dock="Right" Margin="0,0,6,0"
+                                            Click="ScanCache_Click"/>
+                                </DockPanel>
+                                <TextBlock x:Name="CacheSizeLabel" Text="Press SCAN to check size"
+                                           FontFamily="Consolas" FontSize="10"
+                                           Foreground="{StaticResource MutedBrush}"/>
+                                <TextBlock x:Name="CacheBreakdownLabel" Text=""
+                                           FontFamily="Consolas" FontSize="9"
+                                           Foreground="#2A3448" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                                <TextBlock Text="Clearing forces games to recompile shaders — brief first-session stutters expected."
+                                           FontFamily="Consolas" FontSize="9"
+                                           Foreground="#1E2830" Margin="0,6,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Benchmark -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="BEFORE / AFTER BENCHMARK" Style="{StaticResource SectionLabel}"/>
+                                <TextBlock Text="Capture BEFORE, apply boost, then capture AFTER to see real gains."
+                                           FontFamily="Consolas" FontSize="9"
+                                           Foreground="{StaticResource MutedBrush}" Margin="0,0,0,8"
+                                           TextWrapping="Wrap"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <Button Content="📍 CAPTURE BEFORE"
+                                            Style="{StaticResource SmButton}"
+                                            Margin="0,0,8,0" Click="BenchBefore_Click"/>
+                                    <Button Content="📊 CAPTURE AFTER"
+                                            Style="{StaticResource SmButton}"
+                                            Click="BenchAfter_Click"/>
+                                </StackPanel>
+                                <TextBlock x:Name="BenchResultLabel" Text=""
+                                           FontFamily="Consolas" FontSize="9"
+                                           Foreground="#3A5040" TextWrapping="Wrap" LineHeight="16"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Manual RAM flush info -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="ADAPTIVE BOOST" Style="{StaticResource SectionLabel}"/>
+                                <TextBlock Text="Stutter is auto-detected from frametime variance. When detected, Vortex will automatically flush standby RAM, empty non-essential working sets, and temporarily boost game priority to RealTime for 5s."
+                                           FontFamily="Consolas" FontSize="9"
+                                           Foreground="{StaticResource MutedBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <TextBlock Text="Cooldown: 30 seconds between micro-adjustments."
+                                           FontFamily="Consolas" FontSize="9"
+                                           Foreground="#2A3448" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <!-- ─────────────────────────────────── -->
+                <!-- TAB 6: SETTINGS                     -->
+                <!-- ─────────────────────────────────── -->
+                <Grid x:Name="PageSettings" Margin="18" Visibility="Collapsed" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Optimisation -->
+                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,8,8">
+                        <StackPanel>
+                            <TextBlock Text="OPTIMISATION" Style="{StaticResource SectionLabel}"/>
+                            <CheckBox Content="Auto-boost on game start"         Style="{StaticResource Toggle}" IsChecked="True"/>
+                            <CheckBox Content="Throttle background processes"    Style="{StaticResource Toggle}" IsChecked="True"/>
+                            <CheckBox Content="Elevate game process priority"    Style="{StaticResource Toggle}" IsChecked="True"/>
+                            <CheckBox Content="Set High Performance power plan"  Style="{StaticResource Toggle}"/>
+                            <CheckBox Content="Disable fullscreen optimisations" Style="{StaticResource Toggle}"/>
+                            <CheckBox Content="Clear standby RAM on boost"       Style="{StaticResource Toggle}" IsChecked="True" Margin="0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Startup & UI -->
+                    <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource Card}" Margin="0,0,0,8">
+                        <StackPanel>
+                            <TextBlock Text="STARTUP &amp; UI" Style="{StaticResource SectionLabel}"/>
+                            <CheckBox Content="Start with Windows"    Style="{StaticResource Toggle}"/>
+                            <CheckBox Content="Start minimised"       Style="{StaticResource Toggle}"/>
+                            <CheckBox Content="Show tray icon"        Style="{StaticResource Toggle}" IsChecked="True"/>
+                            <CheckBox Content="FPS overlay"           Style="{StaticResource Toggle}" IsChecked="True"/>
+                            <CheckBox Content="Network overlay"       Style="{StaticResource Toggle}" IsChecked="True"/>
+                            <CheckBox Content="Show notifications"    Style="{StaticResource Toggle}" IsChecked="True" Margin="0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- About -->
+                    <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,8,0">
+                        <StackPanel>
+                            <TextBlock Text="ABOUT" Style="{StaticResource SectionLabel}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="VERSION:" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,0,10,5"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="v2.2.0 (Build 220)" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource GreenBrush}" Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="RUNTIME:" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,0,10,5"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text=".NET 8 · WPF" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource TextBrush}" Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="ML:" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,0,10,5"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="Microsoft.ML FastTree" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource TextBrush}" Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="AUTHOR:" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,0,10,5"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="Jumpzy" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource TextBrush}" Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="LICENSE:" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,0,10,0"/>
+                                <TextBlock Grid.Row="4" Grid.Column="1" Text="MIT" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource TextBrush}"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Custom Games -->
+                    <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Text="CUSTOM GAME EXECUTABLES" Style="{StaticResource SectionLabel}"/>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="SettingsCustomExeInput" Style="{StaticResource DarkInput}"
+                                         Text="game.exe" Margin="0,0,6,0"/>
+                                <Button Grid.Column="1" Content="ADD" Style="{StaticResource SmButton}"
+                                        Click="AddCustomGame_Click"/>
+                            </Grid>
+                            <ItemsControl x:Name="SettingsCustomGamesList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" FontFamily="Consolas" FontSize="10"
+                                                   Foreground="{StaticResource GreenBrush}" Opacity=".7"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Grid x:Name="PageControl" Margin="18" Visibility="Collapsed" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="OPTIMIZATION PROFILES" Style="{StaticResource SectionLabel}"/>
+                                <ComboBox x:Name="ProfileCombo" SelectionChanged="ProfileCombo_SelectionChanged" Margin="0,0,0,8">
+                                    <ComboBoxItem Content="Balanced"/>
+                                    <ComboBoxItem Content="Competitive FPS"/>
+                                    <ComboBoxItem Content="Streaming"/>
+                                    <ComboBoxItem Content="Laptop Battery"/>
+                                    <ComboBoxItem Content="Max Performance"/>
+                                </ComboBox>
+                                <CheckBox x:Name="SafeModeCheck" Content="Safe mode: avoid registry and aggressive system changes"
+                                          Style="{StaticResource Toggle}" Checked="Settings_Changed" Unchecked="Settings_Changed"/>
+                                <TextBlock x:Name="ProfileSummary" Text="Balanced profile loaded."
+                                           FontFamily="Consolas" FontSize="10" Foreground="{StaticResource MutedBrush}"
+                                           TextWrapping="Wrap" Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="GAME-SPECIFIC RULES" Style="{StaticResource SectionLabel}"/>
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="GameRuleExeInput" Style="{StaticResource DarkInput}" Text="game.exe" Margin="0,0,6,0"/>
+                                    <ComboBox x:Name="GameRuleProfileCombo" Grid.Column="1" Margin="0,0,6,0">
+                                        <ComboBoxItem Content="Balanced"/>
+                                        <ComboBoxItem Content="Competitive FPS"/>
+                                        <ComboBoxItem Content="Streaming"/>
+                                        <ComboBoxItem Content="Laptop Battery"/>
+                                        <ComboBoxItem Content="Max Performance"/>
+                                    </ComboBox>
+                                    <Button Grid.Column="2" Content="ADD" Style="{StaticResource SmButton}" Click="AddGameRule_Click"/>
+                                </Grid>
+                                <ItemsControl x:Name="GameRulesList">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}" FontFamily="Consolas" FontSize="10"
+                                                       Foreground="{StaticResource BlueBrush}" Margin="0,0,0,3"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="OVERLAY CUSTOMIZER" Style="{StaticResource SectionLabel}"/>
+                                <TextBlock Text="Scale" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}"/>
+                                <Slider x:Name="OverlayScaleSlider" Minimum="0.75" Maximum="1.75" ValueChanged="OverlaySlider_Changed"/>
+                                <TextBlock Text="Opacity" FontFamily="Consolas" FontSize="9" Foreground="{StaticResource MutedBrush}" Margin="0,8,0,0"/>
+                                <Slider x:Name="OverlayOpacitySlider" Minimum="0.35" Maximum="1" ValueChanged="OverlaySlider_Changed"/>
+                                <TextBlock x:Name="OverlayCustomSummary" Text="Overlay scale and opacity apply live."
+                                           FontFamily="Consolas" FontSize="10" Foreground="{StaticResource MutedBrush}" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="THEME EDITOR" Style="{StaticResource SectionLabel}"/>
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="130"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ComboBox x:Name="AccentCombo" SelectionChanged="ThemeCombo_Changed" Margin="0,0,6,0">
+                                        <ComboBoxItem Content="#38BDF8"/>
+                                        <ComboBoxItem Content="#22E6A8"/>
+                                        <ComboBoxItem Content="#E879F9"/>
+                                        <ComboBoxItem Content="#FBBF24"/>
+                                    </ComboBox>
+                                    <ComboBox x:Name="DensityCombo" Grid.Column="1" SelectionChanged="ThemeCombo_Changed">
+                                        <ComboBoxItem Content="Compact"/>
+                                        <ComboBoxItem Content="Normal"/>
+                                        <ComboBoxItem Content="Comfortable"/>
+                                    </ComboBox>
+                                </Grid>
+                                <TextBlock x:Name="ThemeSummary" Text="Theme preferences are saved for the next session."
+                                           FontFamily="Consolas" FontSize="10" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="MINI MODE &amp; PROCESS DETAILS" Style="{StaticResource SectionLabel}"/>
+                                <Button Content="TOGGLE MINI MODE" Style="{StaticResource SmButton}" HorizontalAlignment="Left"
+                                        Click="ToggleMiniMode_Click"/>
+                                <TextBlock x:Name="ProcessDetailsBox" Text="Select refresh to inspect high-impact background processes."
+                                           FontFamily="Consolas" FontSize="10" Foreground="{StaticResource MutedBrush}"
+                                           TextWrapping="Wrap" LineHeight="16" Margin="0,8,0,0"/>
+                                <Button Content="REFRESH PROCESS DETAILS" Style="{StaticResource SmButton}" Margin="0,8,0,0"
+                                        HorizontalAlignment="Left" Click="RefreshProcessDetails_Click"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1">
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="SYSTEM HEALTH" Style="{StaticResource SectionLabel}"/>
+                                <TextBlock x:Name="HealthSummary" Text="Scanning..."
+                                           FontFamily="Consolas" FontSize="10" Foreground="{StaticResource TextBrush}"
+                                           TextWrapping="Wrap" LineHeight="16"/>
+                                <Button Content="REFRESH HEALTH" Style="{StaticResource SmButton}" Margin="0,8,0,0"
+                                        HorizontalAlignment="Left" Click="RefreshHealth_Click"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="SMART RECOMMENDATIONS" Style="{StaticResource SectionLabel}"/>
+                                <TextBlock x:Name="RecommendationBox" Text="Collecting telemetry..."
+                                           FontFamily="Consolas" FontSize="10" Foreground="{StaticResource YellowBrush}"
+                                           TextWrapping="Wrap" LineHeight="16"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="BOOST HISTORY" Style="{StaticResource SectionLabel}"/>
+                                <ScrollViewer Height="95">
+                                    <TextBlock x:Name="BoostHistoryBox" FontFamily="Consolas" FontSize="10"
+                                               Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="FIRST-RUN SETUP &amp; DIAGNOSTICS" Style="{StaticResource SectionLabel}"/>
+                                <CheckBox x:Name="FirstRunCompleteCheck" Content="Setup complete" Style="{StaticResource Toggle}"
+                                          Checked="Settings_Changed" Unchecked="Settings_Changed"/>
+                                <Button Content="EXPORT DIAGNOSTICS ZIP" Style="{StaticResource BoostButton}" Margin="0,8,0,0"
+                                        Click="ExportDiagnostics_Click"/>
+                                <TextBlock x:Name="DiagnosticsExportLabel" Text=""
+                                           FontFamily="Consolas" FontSize="9" Foreground="{StaticResource GreenBrush}"
+                                           TextWrapping="Wrap" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="UPDATES &amp; PLUGINS" Style="{StaticResource SectionLabel}"/>
+                                <TextBox x:Name="UpdateManifestInput" Style="{StaticResource DarkInput}"
+                                         Text="https://example.com/update-manifest.json" Margin="0,0,0,8"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <Button Content="CHECK UPDATE" Style="{StaticResource SmButton}" Margin="0,0,8,0"
+                                            Click="CheckUpdate_Click"/>
+                                    <Button Content="SCAN PLUGINS" Style="{StaticResource SmButton}" Click="ScanPlugins_Click"/>
+                                </StackPanel>
+                                <TextBlock x:Name="UpdatePluginStatus" Text="Plugins load from %APPDATA%\JumpzysVortex\Plugins."
+                                           FontFamily="Consolas" FontSize="10" Foreground="{StaticResource MutedBrush}"
+                                           TextWrapping="Wrap" LineHeight="16"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="PRESENTMON FPS" Style="{StaticResource SectionLabel}"/>
+                                <TextBlock x:Name="PresentMonStatus" Text="Checking PresentMon..."
+                                           FontFamily="Consolas" FontSize="10" Foreground="{StaticResource MutedBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <Button Content="START 30S CAPTURE" Style="{StaticResource SmButton}" HorizontalAlignment="Left"
+                                        Click="StartPresentMonCapture_Click"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="RESTORE / SAFETY CENTER" Style="{StaticResource SectionLabel}"/>
+                                <TextBlock x:Name="RestoreSafetyBox" Text="No tracked restore actions yet."
+                                           FontFamily="Consolas" FontSize="10" Foreground="{StaticResource MutedBrush}"
+                                           TextWrapping="Wrap" LineHeight="16" Margin="0,0,0,8"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="REFRESH" Style="{StaticResource SmButton}" Margin="0,0,8,0"
+                                            Click="RefreshRestoreSafety_Click"/>
+                                    <Button Content="CLEAR HISTORY" Style="{StaticResource SmButton}" Click="ClearRestoreSafety_Click"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="PageLogs" Margin="18" Visibility="Collapsed" VerticalAlignment="Top">
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <DockPanel LastChildFill="False" Margin="0,0,0,10">
+                                <TextBlock Text="SESSION LOG" Style="{StaticResource SectionLabel}" Margin="0,0,0,0" DockPanel.Dock="Left"/>
+                                <Button Content="OPEN FOLDER" Style="{StaticResource SmButton}"
+                                        DockPanel.Dock="Right" Click="OpenLogFolder_Click"/>
+                                <Button Content="CLEAR" Style="{StaticResource SmButton}"
+                                        DockPanel.Dock="Right" Margin="0,0,6,0" Click="ClearLogs_Click"/>
+                            </DockPanel>
+                            <ScrollViewer x:Name="LogScrollViewer" Height="560">
+                                <TextBlock x:Name="FullLogBox"
+                                           FontFamily="Consolas" FontSize="10"
+                                           Foreground="#2A3448" TextWrapping="Wrap" LineHeight="18"/>
+                            </ScrollViewer>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</Window>

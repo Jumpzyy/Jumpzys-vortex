@@ -1,0 +1,159 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, for example 2.2.1"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  PROJECT_PATH: JumpzysVortex.App/JumpzysVortex.App.csproj
+  APP_NAME: JumpzysVortex
+  REPO_SLUG: Jumpzyy/Jumpzys-vortex
+  UPDATE_BRANCH: main
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $version = "${{ inputs.version }}".TrimStart("v")
+          } else {
+            $version = "${{ github.ref_name }}".TrimStart("v")
+          }
+
+          if ($version -notmatch '^\d+\.\d+\.\d+$') {
+            throw "Version must be SemVer like 2.2.1"
+          }
+
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "tag=v$version" >> $env:GITHUB_OUTPUT
+          "assemblyVersion=$version.0" >> $env:GITHUB_OUTPUT
+
+      - name: Restore
+        run: dotnet restore "${{ env.PROJECT_PATH }}"
+
+      - name: Publish self-contained single-file win-x64
+        shell: pwsh
+        run: |
+          $version = "${{ steps.version.outputs.version }}"
+          $assemblyVersion = "${{ steps.version.outputs.assemblyVersion }}"
+          dotnet publish "${{ env.PROJECT_PATH }}" `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:PublishReadyToRun=false `
+            -p:DebugType=none `
+            -p:DebugSymbols=false `
+            -p:Version=$version `
+            -p:AssemblyVersion=$assemblyVersion `
+            -p:FileVersion=$assemblyVersion `
+            -p:InformationalVersion=$version `
+            -o publish
+
+      - name: Create release assets and update.xml
+        id: assets
+        shell: pwsh
+        run: |
+          $version = "${{ steps.version.outputs.version }}"
+          $tag = "${{ steps.version.outputs.tag }}"
+          $assetBase = "${{ env.APP_NAME }}-win-x64-$version"
+          $zip = "$assetBase.zip"
+          $exeAsset = "${{ env.APP_NAME }}-$version.exe"
+
+          Copy-Item "publish\${{ env.APP_NAME }}.exe" $exeAsset -Force
+          Compress-Archive -Path "publish\*" -DestinationPath $zip -Force
+
+          $downloadUrl = "https://github.com/${{ env.REPO_SLUG }}/releases/download/$tag/$zip"
+          $changelogUrl = "https://github.com/${{ env.REPO_SLUG }}/releases/tag/$tag"
+          $xml = @"
+          <?xml version="1.0" encoding="UTF-8"?>
+          <item>
+            <version>$version</version>
+            <url>$downloadUrl</url>
+            <changelog>$changelogUrl</changelog>
+            <mandatory>false</mandatory>
+          </item>
+          "@
+          $xml = $xml -replace '^\s{10}', ''
+          Set-Content -Path update.xml -Value $xml -Encoding UTF8
+          Copy-Item update.xml "$env:RUNNER_TEMP\update.xml" -Force
+
+          Get-FileHash $zip -Algorithm SHA256 |
+            Select-Object Hash, Path |
+            ConvertTo-Json |
+            Set-Content "$zip.sha256.json" -Encoding UTF8
+
+          "zip=$zip" >> $env:GITHUB_OUTPUT
+          "exe=$exeAsset" >> $env:GITHUB_OUTPUT
+
+      - name: Create or update GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ steps.version.outputs.tag }}"
+          $version = "${{ steps.version.outputs.version }}"
+          $zip = "${{ steps.assets.outputs.zip }}"
+          $exe = "${{ steps.assets.outputs.exe }}"
+
+          gh release view $tag 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag `
+              --title "Jumpzys Vortex $version" `
+              --notes "Release $version" `
+              $zip "$zip.sha256.json" $exe update.xml
+          } else {
+            gh release upload $tag $zip "$zip.sha256.json" $exe update.xml --clobber
+          }
+
+      - name: Commit updated update.xml to main
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin ${{ env.UPDATE_BRANCH }}
+          git checkout ${{ env.UPDATE_BRANCH }}
+          Copy-Item "$env:RUNNER_TEMP\update.xml" update.xml -Force
+          git add update.xml
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "Update AutoUpdater.NET manifest for ${{ steps.version.outputs.tag }}"
+            git push origin ${{ env.UPDATE_BRANCH }}
+          }
+
+      - name: Upload workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: JumpzysVortex-${{ steps.version.outputs.version }}-win-x64
+          path: |
+            publish/**
+            ${{ steps.assets.outputs.zip }}
+            ${{ steps.assets.outputs.zip }}.sha256.json
+            ${{ steps.assets.outputs.exe }}
+            update.xml

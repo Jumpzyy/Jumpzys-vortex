@@ -1,0 +1,6 @@
+{
+  "name": "Example Optimizer",
+  "version": "0.1.0",
+  "kind": "Optimizer",
+  "description": "Template manifest for future Vortex optimizer plugins."
+}

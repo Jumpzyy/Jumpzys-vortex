@@ -1,0 +1,16 @@
+bin/
+obj/
+publish/
+publish-test/
+release/
+installer/
+.vs/
+.idea/
+*.user
+*.suo
+*.cache
+*.log
+*.tmp
+*.zip
+*.nupkg
+TestResults/

@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>JumpzysVortex</AssemblyName>
+    <RootNamespace>JumpzysVortex.App</RootNamespace>
+    <Version>2.2.0</Version>
+    <AssemblyVersion>2.2.0.0</AssemblyVersion>
+    <FileVersion>2.2.0.0</FileVersion>
+    <InformationalVersion>2.2.0</InformationalVersion>
+    <Company>Jumpzy</Company>
+    <Product>Jumpzys Vortex</Product>
+    <Authors>Jumpzy</Authors>
+    <ApplicationIcon>vortex.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="vortex.ico"/>
+    <ProjectReference Include="..\JumpzysVortex.AI\JumpzysVortex.AI.csproj"/>
+    <ProjectReference Include="..\JumpzysVortex.Config\JumpzysVortex.Config.csproj"/>
+    <ProjectReference Include="..\JumpzysVortex.Core\JumpzysVortex.Core.csproj"/>
+    <ProjectReference Include="..\JumpzysVortex.Hotkeys\JumpzysVortex.Hotkeys.csproj"/>
+    <ProjectReference Include="..\JumpzysVortex.ML\JumpzysVortex.ML.csproj"/>
+    <ProjectReference Include="..\JumpzysVortex.Network\JumpzysVortex.Network.csproj"/>
+    <ProjectReference Include="..\JumpzysVortex.Overlay\JumpzysVortex.Overlay.csproj"/>
+    <ProjectReference Include="..\JumpzysVortex.Services\JumpzysVortex.Services.csproj"/>
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.9.2"/>
+  </ItemGroup>
+</Project>
