@@ -1,10 +1,10 @@
 {
-  "version": "2.3.0",
-  "tag": "v2.3.0",
+  "version": "2.4.0",
+  "tag": "v2.4.0",
   "name": "Jumpzys Vortex",
-  "downloadUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.3.0/JumpzysVortex-win-x64-2.3.0.zip",
-  "exeUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.3.0/JumpzysVortex-2.3.0.exe",
-  "installerUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.3.0/JumpzysVortex-win-x64-2.3.0.zip",
-  "changelogUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/tag/v2.3.0",
+  "downloadUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.4.0/JumpzysVortex-win-x64-2.4.0.zip",
+  "exeUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.4.0/JumpzysVortex-2.4.0.exe",
+  "installerUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.4.0/JumpzysVortex-win-x64-2.4.0.zip",
+  "changelogUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/tag/v2.4.0",
   "mandatory": false
 }
