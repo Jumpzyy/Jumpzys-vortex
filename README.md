@@ -1,6 +1,1 @@
-# Jumpzys Vortex
-
-Public release downloads and update manifests for Jumpzys Vortex.
-
-Latest release: https://github.com/Jumpzyy/Jumpzys-vortex/releases/tag/v2.4.3
-
+# Jumpzys Vortex`n`nPublic release repo for Jumpzys Vortex downloads and update manifests.`n`nLatest release: v2.5.0`n`nDownload from the Releases page. Source code is kept private.
