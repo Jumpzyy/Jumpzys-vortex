@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <item>
-  <version>2.5.4</version>
-  <url>https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.5.4/JumpzysVortex-win-x64-2.5.4.zip</url>
-  <changelog>https://github.com/Jumpzyy/Jumpzys-vortex/releases/tag/v2.5.4</changelog>
+  <version>2.5.5</version>
+  <url>https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.5.5/JumpzysVortex-2.5.5.exe</url>
+  <changelog>https://github.com/Jumpzyy/Jumpzys-vortex/releases/tag/v2.5.5</changelog>
+  <plugins>https://raw.githubusercontent.com/Jumpzyy/Jumpzys-vortex/main/plugins/catalog.json</plugins>
   <mandatory>false</mandatory>
 </item>
+
+
