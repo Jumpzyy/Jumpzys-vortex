@@ -1,16 +1,20 @@
-﻿# Jumpzys Vortex
+# Jumpzys Vortex
 
 Public release downloads and update manifests for Jumpzys Vortex.
 
-## Latest release
+## Latest Release
 
-- Version: 2.5.5
-- Release: https://github.com/Jumpzyy/Jumpzys-vortex/releases/tag/v2.5.5
-- Download: https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.5.5/JumpzysVortex-2.5.5.exe
+Version: 2.5.5
 
-## Public files
+## Downloads
 
-- `update.xml` - AutoUpdater.NET manifest
-- `latest.json` - latest-version manifest
-- `plugins/catalog.json` - curated plugin catalog foundation
-- GitHub Releases - EXE/ZIP downloads
+- JumpzysVortex-2.5.5.exe
+- JumpzysVortex-2.5.5.zip
+
+## Public Files
+
+- update.xml
+- latest.json
+- plugins/catalog.json
+
+GitHub Releases contains official downloads.
