@@ -1,24 +1,16 @@
-# Jumpzys Vortex
+﻿# Jumpzys Vortex
 
-Advanced Windows gaming optimisation, monitoring, cleanup, AI assistant, plugin, and performance toolkit.
+Public release downloads and update manifests for Jumpzys Vortex.
 
-## Latest Release
+## Latest release
 
-Version: 2.5.5
+- Version: 2.5.6
+- Release: https://github.com/Jumpzyy/Jumpzys-vortex/releases/tag/v2.5.6
+- Download: https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.5.6/JumpzysVortex-2.5.6.exe
 
-## Downloads
+## Public files
 
-- JumpzysVortex-2.5.5.exe
-- JumpzysVortex-2.5.5.zip
-
-## Included Public Files
-
-- update.xml
-- latest.json
-- plugins/catalog.json
-- Tools/PresentMon/PresentMon.exe
-
-## Notes
-
-Official public releases are provided here without source code.
-Download the ZIP or EXE from this repo or GitHub Releases.
+- `update.xml` - AutoUpdater.NET manifest
+- `latest.json` - latest-version manifest
+- `plugins/catalog.json` - curated plugin catalog foundation
+- GitHub Releases - EXE/ZIP downloads
