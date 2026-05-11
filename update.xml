@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <item>
-  <version>2.5.5</version>
-  <url>https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.5.5/JumpzysVortex-2.5.5.exe</url>
-  <changelog>https://github.com/Jumpzyy/Jumpzys-vortex/releases/tag/v2.5.5</changelog>
+  <version>2.5.6</version>
+  <url>https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.5.6/JumpzysVortex-2.5.6.exe</url>
+  <changelog>https://github.com/Jumpzyy/Jumpzys-vortex/releases/tag/v2.5.6</changelog>
   <plugins>https://raw.githubusercontent.com/Jumpzyy/Jumpzys-vortex/main/plugins/catalog.json</plugins>
   <mandatory>false</mandatory>
 </item>
