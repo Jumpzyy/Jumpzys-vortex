@@ -1,11 +1,11 @@
 {
-  "version": "2.5.5",
-  "tag": "v2.5.5",
+  "version": "2.5.6",
+  "tag": "v2.5.6",
   "name": "Jumpzys Vortex",
-  "downloadUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.5.5/JumpzysVortex-2.5.5.exe",
-  "exeUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.5.5/JumpzysVortex-2.5.5.exe",
-  "installerUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.5.5/JumpzysVortex-2.5.5.exe",
-  "changelogUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/tag/v2.5.5",
+  "downloadUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.5.6/JumpzysVortex-2.5.6.exe",
+  "exeUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.5.6/JumpzysVortex-2.5.6.exe",
+  "installerUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/download/v2.5.6/JumpzysVortex-2.5.6.exe",
+  "changelogUrl": "https://github.com/Jumpzyy/Jumpzys-vortex/releases/tag/v2.5.6",
   "mandatory": false
 }
 
