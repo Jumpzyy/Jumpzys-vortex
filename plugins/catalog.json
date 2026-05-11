@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "updatedUtc": "2026-05-11T00:00:00Z",
+  "plugins": [
+    {
+      "name": "Example Optimizer",
+      "version": "0.1.0",
+      "kind": "Optimizer",
+      "description": "Safe metadata-only example plugin for Jumpzys Vortex plugin discovery.",
+      "id": "example-optimizer"
+    }
+  ]
+}
